@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Accessible Word</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    const suggestions = [
+      "Missing alt text",
+      "Low contrast text",
+      "No heading structure",
+      "Small font size",
+      "No document title",
+      "Long paragraphs",
+      "Table lacks headers"
+    ];
+
+    function showSection(id) {
+      const sections = ['home', 'about', 'upload', 'contact'];
+      sections.forEach(sec => {
+        document.getElementById(sec).style.display = sec === id ? 'block' : 'none';
+      });
+    }
+
+    function filterFeatures() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      const items = document.querySelectorAll(".feature-item");
+      items.forEach(item => {
+        item.style.display = item.textContent.toLowerCase().includes(input) ? 'list-item' : 'none';
+      });
+      showSuggestions(input);
+    }
+
+    function showSuggestions(input) {
+      const list = document.getElementById("suggestionsList");
+      list.innerHTML = '';
+      const matches = suggestions.filter(s => s.toLowerCase().includes(input));
+      if (!input || matches.length === 0) {
+        list.classList.add("hidden");
+        return;
+      }
+
+      matches.forEach(match => {
+        const item = document.createElement("div");
+        item.textContent = match;
+        item.className = "px-4 py-2 hover:bg-gray-200 cursor-pointer";
+        item.onclick = () => {
+          document.getElementById("searchInput").value = match;
+          list.classList.add("hidden");
+          filterFeatures();
+        };
+        list.appendChild(item);
+      });
+
+      list.classList.remove("hidden");
+    }
+
+    function handleUpload(event) {
+      event.preventDefault();
+      const fileInput = document.getElementById('fileInput');
+      const statusDiv = document.getElementById('uploadStatus');
+
+      if (fileInput.files.length > 0) {
+        statusDiv.classList.remove('hidden');
+        statusDiv.innerHTML = `
+          <div class="flex justify-center mb-3">
+            <svg class="animate-spin h-8 w-8 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10"
+                      stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+          </div>
+          <p class="text-yellow-300 font-semibold">Checking for accessibility issues...</p>
+        `;
+
+        setTimeout(() => {
+          const issuesFound = Math.random() < 0.6; // simulate result
+
+          if (issuesFound) {
+            statusDiv.innerHTML = `
+              <p class="text-red-400 font-semibold mb-4">Accessibility issues found ⚠️</p>
+              <div class="bg-white text-gray-900 p-4 rounded shadow">
+                <h4 class="font-bold text-lg mb-2">Detected Issues:</h4>
+                <ul class="list-disc pl-6 space-y-1">
+                  <li>❌ Missing alt text on image</li>
+                  <li>❌ No heading structure</li>
+                  <li>❌ Low color contrast</li>
+                </ul>
+              </div>
+            `;
+          } else {
+            statusDiv.innerHTML = `
+              <p class="text-green-400 font-semibold text-lg">✅ No accessibility issues found!</p>
+              <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="Success"
+                   class="mx-auto mt-4 w-20 h-20">
+            `;
+          }
+        }, 3000);
+      }
+    }
+
+    window.onload = () => showSection('home');
+  </script>
+</head>
+<body class="font-sans text-gray-800 bg-gray-50">
+
+  <!-- Header -->
+  <header class="bg-blue-800 text-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <h1 class="text-2xl font-bold">Accessible Word</h1>
+      <nav class="flex flex-wrap items-center gap-4 relative">
+        <button onclick="showSection('home')" class="hover:text-yellow-300">Home</button>
+        <button onclick="showSection('about')" class="hover:text-yellow-300">About</button>
+        <button onclick="showSection('upload')" class="hover:text-yellow-300">Accessibility Checker</button>
+        <button onclick="showSection('contact')" class="hover:text-yellow-300">Contact</button>
+
+        <!-- Search Input -->
+        <div class="relative">
+          <input id="searchInput" onkeyup="filterFeatures()" onfocus="showSuggestions('')" type="text"
+                 placeholder="Search accessibility..." class="px-3 py-1 rounded text-gray-900 w-48 md:w-64 focus:outline-none">
+          <div id="suggestionsList"
+               class="absolute bg-white text-black border border-gray-300 mt-1 rounded shadow w-full z-50 hidden max-h-48 overflow-y-auto">
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Home Section -->
+  <section id="home" class="bg-gradient-to-r from-blue-100 via-white to-blue-100 py-16 px-6 text-center hidden">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-4xl font-extrabold mb-4 text-blue-900">Welcome to Accessible Word</h2>
+      <p class="text-lg mb-6 text-gray-700">Check Word documents for accessibility issues like missing alt text, headings, and contrast.</p>
+
+      <ul class="text-left list-disc list-inside max-w-lg mx-auto text-gray-800 mb-6 space-y-1">
+        <li class="feature-item">Missing alt text</li>
+        <li class="feature-item">Low contrast text</li>
+        <li class="feature-item">No heading structure</li>
+        <li class="feature-item">Small font size</li>
+        <li class="feature-item">No document title</li>
+        <li class="feature-item">Long paragraphs</li>
+        <li class="feature-item">Table lacks headers</li>
+      </ul>
+
+      <img src="https://cdn-icons-png.flaticon.com/512/4139/4139981.png" alt="Accessibility"
+           class="mx-auto w-32 h-32 mt-4 rounded-full shadow hover:scale-105 transition-transform duration-300">
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="bg-white py-16 px-6 border-t border-gray-200 hidden">
+    <div class="max-w-5xl mx-auto">
+      <h3 class="text-3xl font-bold mb-6 text-blue-700">About Accessible Word</h3>
+      <p class="text-gray-700 text-lg mb-4">
+        Accessible Word helps ensure Word documents are easy to read and navigate for people of all abilities.
+      </p>
+    </div>
+  </section>
+
+  <!-- Upload Section -->
+  <section id="upload" class="bg-gray-900 text-white py-16 px-6 hidden">
+    <div class="max-w-xl mx-auto">
+      <h3 class="text-2xl font-semibold text-center mb-6">Accessibility Checker</h3>
+      <form onsubmit="handleUpload(event)" enctype="multipart/form-data" class="space-y-4 bg-gray-800 p-6 rounded-lg shadow-lg">
+        <input id="fileInput" type="file" name="myfile" class="w-full p-2 border border-gray-300 rounded text-gray-900 bg-white" required>
+        <input type="submit" value="Run Accessibility Check" class="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-2 rounded cursor-pointer">
+      </form>
+      <div id="uploadStatus" class="mt-6 text-center hidden"></div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="bg-yellow-50 py-12 px-6 text-center hidden">
+    <div class="max-w-xl mx-auto">
+      <h3 class="text-2xl font-bold mb-4 text-yellow-800">Contact Us</h3>
+      <p>Email: <a href="mailto:accessibleword@example.com" class="text-blue-600 hover:underline">accessibleword@example.com</a></p>
+      <p>Phone: <span class="text-gray-800 font-semibold">+91 7350717704</span></p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-blue-800 text-white py-4 text-center text-sm">
+    © 2025 Accessible Word | Designed with 💙
+  </footer>
+
+</body>
+</html>
